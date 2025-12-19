@@ -4,17 +4,13 @@ import SkillPill from "./SkillPill";
 import useSound from "@/app/hooks/useSound";
 import React from "react";
 
-export default function HudCard({ title, icon: Icon, items, align = "left", colorClass = "border-green-500/30 text-green-400" }: any) {
-  // Sound Effect
+export default function HudCard({ title, icon: Icon, items, align = "left", colorClass = "border-green-500/30 text-green-400", className = "" }: any) {
   const playHover = useSound("/sounds/hover.mp3", 0.2);
 
-  // 3D Tilt Logic
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-
   const mouseXSpring = useSpring(x);
   const mouseYSpring = useSpring(y);
-
   const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["7deg", "-7deg"]);
   const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-7deg", "7deg"]);
 
@@ -24,10 +20,8 @@ export default function HudCard({ title, icon: Icon, items, align = "left", colo
     const height = rect.height;
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
-    const xPct = mouseX / width - 0.5;
-    const yPct = mouseY / height - 0.5;
-    x.set(xPct);
-    y.set(yPct);
+    x.set(mouseX / width - 0.5);
+    y.set(mouseY / height - 0.5);
   };
 
   const handleMouseLeave = () => {
@@ -42,31 +36,28 @@ export default function HudCard({ title, icon: Icon, items, align = "left", colo
       onMouseEnter={() => playHover()}
       style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
       initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, delay: 0.2 }}
-      className={`relative group w-full md:w-72 bg-black/40 backdrop-blur-md border ${colorClass} p-5 rounded-sm hover:bg-black/60 transition-colors perspective-1000`}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5 }}
+      className={`relative group w-full h-full bg-[#0a0a0a]/80 backdrop-blur-xl border border-white/5 p-6 rounded-3xl overflow-hidden hover:border-white/10 transition-colors perspective-1000 ${className} ${colorClass}`}
     >
-      {/* Decorative Corner Lines (Now with slight depth) */}
-      <div className={`absolute -top-1 -left-1 w-3 h-3 border-t-2 border-l-2 ${colorClass.split(" ")[0]} opacity-50 group-hover:opacity-100 transition-opacity`} style={{ transform: "translateZ(20px)" }}></div>
-      <div className={`absolute -bottom-1 -right-1 w-3 h-3 border-b-2 border-r-2 ${colorClass.split(" ")[0]} opacity-50 group-hover:opacity-100 transition-opacity`} style={{ transform: "translateZ(20px)" }}></div>
+      {/* Dynamic Background Glow */}
+      <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-[60px] -translate-y-1/2 translate-x-1/2 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
       {/* Header */}
-      <div className={`flex items-center gap-3 mb-4 ${align === "right" ? "flex-row-reverse text-right" : ""}`} style={{ transform: "translateZ(30px)" }}>
-        <Icon size={20} className="animate-pulse" />
-        <h4 className="font-mono text-sm uppercase tracking-[0.2em] font-bold">{title}</h4>
-        <div className="flex-1 h-px bg-current opacity-20"></div>
+      <div className={`flex items-center gap-3 mb-6 relative z-10 ${align === "right" ? "flex-row-reverse text-right" : ""}`} style={{ transform: "translateZ(20px)" }}>
+        <div className="p-2 rounded-lg bg-white/5 text-current shadow-sm">
+           <Icon size={18} />
+        </div>
+        <h4 className="font-mono text-xs uppercase tracking-[0.2em] font-bold opacity-70">{title}</h4>
       </div>
 
-      {/* Content Grid */}
-      <div className={`flex flex-wrap gap-2 ${align === "right" ? "justify-end" : "justify-start"}`} style={{ transform: "translateZ(40px)" }}>
-        {/* FIX: Changed JSX.Element to React.ReactNode */}
+      {/* Content */}
+      <div className={`flex flex-wrap gap-2 relative z-10 ${align === "right" ? "justify-end" : "justify-start"}`} style={{ transform: "translateZ(30px)" }}>
         {items.map((item: string | React.ReactNode, i: number) => (
             typeof item === 'string' ? <SkillPill key={i} item={item} /> : <div key={i}>{item}</div>
         ))}
       </div>
-
-      {/* Subtle holographic scanline */}
-      <div className="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(255,255,255,0.05)_50%)] bg-[length:100%_4px] pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity rounded-sm" style={{ transform: "translateZ(10px)" }}></div>
     </motion.div>
   );
 }
