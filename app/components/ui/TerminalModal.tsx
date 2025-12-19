@@ -2,7 +2,6 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Terminal, X } from "lucide-react";
-import useSound from "@/app/hooks/useSound";
 
 const COMMANDS = {
   help: "Available commands: help, whoami, projects, contact, clear",
@@ -19,10 +18,6 @@ export default function TerminalModal({ isOpen, onClose }: { isOpen: boolean; on
   const inputRef = useRef<HTMLInputElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  // Sounds
-  const playKeySound = useSound("/sounds/click.mp3", 0.2); // Lower volume for typing
-
-  // Auto-focus input and scroll to bottom
   useEffect(() => {
     if (isOpen) {
       inputRef.current?.focus();
@@ -31,7 +26,6 @@ export default function TerminalModal({ isOpen, onClose }: { isOpen: boolean; on
   }, [isOpen, history]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    playKeySound();
     if (e.key === "Enter") {
       const cmd = input.trim().toLowerCase();
       let output = "";
@@ -61,9 +55,8 @@ export default function TerminalModal({ isOpen, onClose }: { isOpen: boolean; on
         >
           <div 
             className="w-full max-w-2xl bg-[#0c0c0c] border border-green-500/50 rounded-lg shadow-[0_0_30px_rgba(34,197,94,0.2)] overflow-hidden"
-            onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
+            onClick={(e) => e.stopPropagation()}
           >
-            {/* Header */}
             <div className="flex items-center justify-between px-4 py-2 bg-green-500/10 border-b border-green-500/20">
               <div className="flex items-center gap-2 text-green-400 font-mono text-sm">
                 <Terminal size={16} /> MK-OS TERMINAL
@@ -71,7 +64,6 @@ export default function TerminalModal({ isOpen, onClose }: { isOpen: boolean; on
               <button onClick={onClose} className="text-green-400 hover:text-white"><X size={18} /></button>
             </div>
 
-            {/* Terminal Body */}
             <div className="p-4 h-80 overflow-y-auto font-mono text-sm text-green-300 selection:bg-green-500/30 scrollbar-thin scrollbar-thumb-green-500/50 scrollbar-track-transparent">
               {history.map((line, i) => (
                 <div key={i} className="mb-2">
@@ -83,7 +75,6 @@ export default function TerminalModal({ isOpen, onClose }: { isOpen: boolean; on
                 </div>
               ))}
               
-              {/* Input Line */}
               <div className="flex gap-2 items-center mt-4">
                 <span className="text-green-500">$</span>
                 <input

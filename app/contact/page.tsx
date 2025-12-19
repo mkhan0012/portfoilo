@@ -8,15 +8,16 @@ import { useState } from "react";
 export default function Contact() {
   const [formStatus, setFormStatus] = useState<"idle" | "submitting" | "success">("idle");
 
-  // This handles the form submission via Formspree
-  async function handleSubmit(event: any) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setFormStatus("submitting");
 
-    const formData = new FormData(event.target);
+    // 1. Capture the form element BEFORE the await
+    const form = event.currentTarget; 
+    const formData = new FormData(form);
     
-    // REPLACE 'YOUR_FORMSPREE_ID' WITH YOUR ACTUAL ID FROM formspree.io
-    const response = await fetch("https://formspree.io/f/mnnjqlqz", { // I added a placeholder ID, replace it!
+    // REPLACE 'YOUR_FORMSPREE_ID' BELOW
+    const response = await fetch("https://formspree.io/f/xjgbkeoj", { 
       method: "POST",
       body: formData,
       headers: {
@@ -26,7 +27,8 @@ export default function Contact() {
 
     if (response.ok) {
       setFormStatus("success");
-      event.target.reset();
+      // 2. Use the captured variable to reset
+      form.reset(); 
     }
   }
 
