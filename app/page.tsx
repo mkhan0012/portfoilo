@@ -250,6 +250,27 @@ export default function Portfolio() {
                           </div>
                        </div>
                     </SpotlightCard>
+
+                    <SpotlightCard className="p-0 overflow-hidden group" spotlightColor="rgba(6, 182, 212, 0.2)" drag={false}>
+                       <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
+                          <div className="p-8 md:p-12 flex flex-col justify-center space-y-6">
+                             <div className="flex items-center gap-3">
+                                <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+                                <span className="text-xs font-bold text-green-400 uppercase tracking-wider">Pamodoro Timer</span>
+                             </div>
+                             <h3 className="text-4xl font-black text-white">Focus.bits</h3>
+                             <p className="text-zinc-400 leading-relaxed">
+                                 A gamified productivity engine featuring Zen Mode, XP tracking, and integrated retro arcade breaks.
+                             </p>
+                             <a href="https://timer-rho-khaki.vercel.app/" target="_blank" className="inline-flex items-center gap-2 text-sm font-bold text-white hover:text-cyan-400 transition-colors mt-4">
+                                LIVE PREVIEW <ArrowRight size={16}/>
+                             </a>
+                          </div>
+                          <div className="relative h-64 lg:h-auto bg-zinc-900 overflow-hidden border-t lg:border-t-0 lg:border-l border-white/5">
+                             <Image src="/timer.png" alt="Crypto" fill className="object-cover group-hover:scale-105 transition-transform duration-700 opacity-60 group-hover:opacity-100" />
+                          </div>
+                       </div>
+                    </SpotlightCard>
                  </div>
               </section>
 
