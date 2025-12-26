@@ -413,7 +413,7 @@ export default function Portfolio() {
                         title: "Arguely",
                         desc: "An automated debate arena powered by Llama-3, featuring an AI Referee for logic checking and scoring.",
                         link: "https://debate-again.vercel.app/",
-                        img: "/arguely-preview.png",
+                        img: "/Arguely.png",
                         color: "purple",
                         tag: "AI Platform",
                         reverse: true
