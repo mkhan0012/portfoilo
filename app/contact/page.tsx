@@ -1,194 +1,173 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { ArrowLeft, Mail, Github, Linkedin, MapPin, Send, Terminal } from "lucide-react";
-import Link from "next/link";
 import { useState } from "react";
+import { Mail, Github, Linkedin, MapPin, Send, Terminal, User, MessageSquare } from "lucide-react";
 
-export default function Contact() {
+// Updated Interface to accept onToast
+interface ContactFormProps {
+  onToast?: (msg: string, type: "success" | "error") => void;
+}
+
+export default function ContactForm({ onToast }: ContactFormProps) {
   const [formStatus, setFormStatus] = useState<"idle" | "submitting" | "success">("idle");
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setFormStatus("submitting");
 
-    // 1. Capture the form element BEFORE the await
-    const form = event.currentTarget; 
+    const form = event.currentTarget;
     const formData = new FormData(form);
-    
-    // REPLACE 'YOUR_FORMSPREE_ID' BELOW
-    const response = await fetch("https://formspree.io/f/xjgbkeoj", { 
-      method: "POST",
-      body: formData,
-      headers: {
-        'Accept': 'application/json'
-      }
-    });
 
-    if (response.ok) {
-      setFormStatus("success");
-      // 2. Use the captured variable to reset
-      form.reset(); 
+    try {
+      const response = await fetch("https://formspree.io/f/xjgbkeoj", {
+        method: "POST",
+        body: formData,
+        headers: {
+          'Accept': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        setFormStatus("success");
+        // Trigger Success Toast
+        if (onToast) onToast("Transmission sent successfully.", "success");
+        
+        form.reset();
+        setTimeout(() => setFormStatus("idle"), 5000);
+      } else {
+        // Handle non-200 responses
+        if (onToast) onToast("Transmission rejected by server.", "error");
+        setFormStatus("idle");
+      }
+    } catch (error) {
+      console.error("Submission failed", error);
+      // Trigger Error Toast
+      if (onToast) onToast("Network Failure. Transmission aborted.", "error");
+      setFormStatus("idle");
     }
   }
 
   return (
-    <main className="min-h-screen bg-[#050505] text-white overflow-hidden selection:bg-green-500/30 flex items-center justify-center p-4 md:p-8">
+    <div className="w-full h-full grid grid-cols-1 lg:grid-cols-2 gap-12 p-4 relative overflow-y-auto custom-scrollbar">
       
-      {/* Background Grid */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none"></div>
+      {/* Background Grid for Texture */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(6,182,212,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(6,182,212,0.05)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none"></div>
 
-      <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-12 relative z-10">
-        
-        {/* LEFT: Contact Info & Terminal */}
-        <motion.div 
-          initial={{ opacity: 0, x: -50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5 }}
-          className="space-y-8"
-        >
-          {/* Back Button */}
-          <Link href="/" className="inline-flex items-center gap-2 text-zinc-400 hover:text-white transition-colors group mb-8">
-            <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform"/>
-            <span className="font-mono text-sm uppercase tracking-widest">Return to Base</span>
-          </Link>
-
-          <div>
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tighter mb-6">
-              Let's <span className="text-green-500">Connect</span>.
-            </h1>
-            <p className="text-xl text-zinc-400 leading-relaxed">
-              I am currently open to <span className="text-white font-semibold">Remote, Onsite, and Hybrid</span> opportunities.
-            </p>
+      {/* LEFT: INFO TERMINAL */}
+      <div className="space-y-8 relative z-10 flex flex-col justify-center">
+        <div>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--accent)]/10 border border-[var(--accent)]/30 text-[var(--accent)] text-xs font-mono mb-6 animate-pulse">
+            <span className="w-2 h-2 rounded-full bg-[var(--accent)]"></span>
+            SIGNAL_STRENGTH: 100%
           </div>
+          <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-[#E2E8F0] mb-4">
+            INITIALIZE <br/> <span className="text-[var(--accent)]">HANDSHAKE</span>
+          </h1>
+          <p className="text-[#94A3B8] text-lg font-light leading-relaxed max-w-md border-l-2 border-[#1E293B] pl-4">
+            I am currently available for <span className="text-[var(--accent)] font-bold">Remote & Hybrid</span> architectural roles.
+          </p>
+        </div>
 
-          {/* Contact Details Card */}
-          <div className="p-6 bg-zinc-900/50 border border-white/10 rounded-2xl space-y-6 backdrop-blur-md">
-             <a href="mailto:moshink0786@gmail.com" className="flex items-center gap-4 text-zinc-300 hover:text-white transition-colors group">
-               <div className="p-3 bg-white/5 rounded-full group-hover:bg-green-500/20 group-hover:text-green-400 transition-colors">
-                 <Mail size={20} />
-               </div>
-               <div>
-                 <span className="block text-xs font-mono text-zinc-500 uppercase tracking-wider">Email</span>
-                 <span className="text-lg">moshink0786@gmail.com</span>
-               </div>
-             </a>
-
-             <a href="https://linkedin.com/in/md-moshin-khan-65510a24b" target="_blank" className="flex items-center gap-4 text-zinc-300 hover:text-white transition-colors group">
-               <div className="p-3 bg-white/5 rounded-full group-hover:bg-blue-500/20 group-hover:text-blue-400 transition-colors">
-                 <Linkedin size={20} />
-               </div>
-               <div>
-                 <span className="block text-xs font-mono text-zinc-500 uppercase tracking-wider">LinkedIn</span>
-                 <span className="text-lg">Connect on LinkedIn</span>
-               </div>
-             </a>
-
-             <a href="https://github.com/mkhan0012" target="_blank" className="flex items-center gap-4 text-zinc-300 hover:text-white transition-colors group">
-               <div className="p-3 bg-white/5 rounded-full group-hover:bg-purple-500/20 group-hover:text-purple-400 transition-colors">
-                 <Github size={20} />
-               </div>
-               <div>
-                 <span className="block text-xs font-mono text-zinc-500 uppercase tracking-wider">GitHub</span>
-                 <span className="text-lg">Check my Repos</span>
-               </div>
-             </a>
-
-             <div className="flex items-center gap-4 text-zinc-300">
-               <div className="p-3 bg-white/5 rounded-full">
-                 <MapPin size={20} />
-               </div>
-               <div>
-                 <span className="block text-xs font-mono text-zinc-500 uppercase tracking-wider">Location</span>
-                 <span className="text-lg">Odisha, India (Open to Relocate)</span>
-               </div>
-             </div>
-          </div>
-        </motion.div>
-
-        {/* RIGHT: Interactive Form */}
-        <motion.div 
-          initial={{ opacity: 0, x: 50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="relative"
-        >
-          <div className="absolute -inset-1 bg-gradient-to-r from-green-500 to-blue-500 rounded-2xl blur opacity-20 pointer-events-none"></div>
-          
-          <form 
-            onSubmit={handleSubmit}
-            className="relative bg-black border border-white/10 p-8 rounded-2xl space-y-6 shadow-2xl"
-          >
-            <div className="flex items-center gap-2 text-green-500 mb-6">
-               <Terminal size={18} />
-               <span className="text-xs font-mono uppercase tracking-widest">Secure Transmission</span>
-            </div>
-
-            <div className="space-y-2">
-              <label htmlFor="name" className="text-sm font-mono text-zinc-500 uppercase">Identity</label>
-              <input 
-                type="text" 
-                name="name" 
-                id="name"
-                required
-                placeholder="Your Name"
-                className="w-full bg-zinc-900/50 border border-white/10 rounded-lg p-4 text-white focus:outline-none focus:border-green-500 transition-colors placeholder:text-zinc-700"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-mono text-zinc-500 uppercase">Frequency (Email)</label>
-              <input 
-                type="email" 
-                name="email" 
-                id="email"
-                required
-                placeholder="your@email.com"
-                className="w-full bg-zinc-900/50 border border-white/10 rounded-lg p-4 text-white focus:outline-none focus:border-green-500 transition-colors placeholder:text-zinc-700"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label htmlFor="message" className="text-sm font-mono text-zinc-500 uppercase">Transmission Data</label>
-              <textarea 
-                name="message" 
-                id="message"
-                rows={5}
-                required
-                placeholder="Tell me about your project..."
-                className="w-full bg-zinc-900/50 border border-white/10 rounded-lg p-4 text-white focus:outline-none focus:border-green-500 transition-colors placeholder:text-zinc-700 resize-none"
-              />
-            </div>
-
-            <button 
-              type="submit" 
-              disabled={formStatus === "submitting" || formStatus === "success"}
-              className={`w-full py-4 rounded-lg font-bold uppercase tracking-widest transition-all flex items-center justify-center gap-2
-                ${formStatus === "success" 
-                  ? "bg-green-500 text-black cursor-default" 
-                  : "bg-white text-black hover:bg-zinc-200"
-                }`}
-            >
-              {formStatus === "submitting" ? (
-                "Sending..."
-              ) : formStatus === "success" ? (
-                "Message Sent Successfully"
-              ) : (
-                <>
-                  Send Message <Send size={16} />
-                </>
-              )}
-            </button>
-
-            {formStatus === "success" && (
-              <p className="text-center text-green-500 text-sm font-mono animate-pulse">
-                // Transmission Received. I will respond shortly.
-              </p>
-            )}
-          </form>
-        </motion.div>
-
+        {/* Contact Cards */}
+        <div className="space-y-4">
+            {[
+              { icon: Mail, label: "EMAIL FREQUENCY", val: "moshink0786@gmail.com", href: "mailto:moshink0786@gmail.com" },
+              { icon: Linkedin, label: "LINKEDIN NETWORK", val: "Connect Profile", href: "https://linkedin.com/in/md-moshin-khan-65510a24b" },
+              { icon: Github, label: "CODE REPOSITORY", val: "github.com/mkhan0012", href: "https://github.com/mkhan0012" },
+              { icon: MapPin, label: "OPERATIONAL BASE", val: "Odisha, India", href: "#" }
+            ].map((item, i) => (
+              <a key={i} href={item.href} target={item.icon !== MapPin ? "_blank" : "_self"} className="flex items-center gap-4 p-4 bg-[#020408]/50 border border-[#1E293B] rounded-xl hover:border-[var(--accent)] hover:bg-[var(--accent)]/5 transition-all group">
+                <div className="p-3 bg-[#1E293B]/50 rounded-lg text-[var(--accent)] group-hover:scale-110 transition-transform">
+                  <item.icon size={20} />
+                </div>
+                <div>
+                  <span className="block text-[10px] font-mono text-[#94A3B8] uppercase tracking-widest">{item.label}</span>
+                  <span className="text-[#E2E8F0] font-medium group-hover:text-[var(--accent)] transition-colors">{item.val}</span>
+                </div>
+              </a>
+            ))}
+        </div>
       </div>
-    </main>
+
+      {/* RIGHT: TRANSMISSION FORM */}
+      <div className="relative z-10">
+        <form 
+          onSubmit={handleSubmit}
+          className="bg-[#0F172A]/50 backdrop-blur-md border border-[#1E293B] p-8 rounded-3xl space-y-6 shadow-[0_0_50px_rgba(0,0,0,0.2)] relative group"
+        >
+          {/* Decorative Corner */}
+          <div className="absolute top-0 right-0 w-16 h-16 border-t-2 border-r-2 border-[var(--accent)]/30 rounded-tr-3xl group-hover:border-[var(--accent)] transition-colors"></div>
+
+          <div className="flex items-center gap-2 text-[var(--accent)] mb-8 border-b border-[#1E293B] pb-4">
+             <Terminal size={18} />
+             <span className="text-xs font-mono uppercase tracking-widest">SECURE_TRANSMISSION_UPLINK</span>
+          </div>
+
+          <div className="space-y-6">
+            <div className="group/input">
+              <label className="text-[10px] font-mono text-[#94A3B8] uppercase tracking-widest mb-2 block group-focus-within/input:text-[var(--accent)]">Identity Name</label>
+              <div className="relative">
+                <User className="absolute left-4 top-3.5 text-[#94A3B8] group-focus-within/input:text-[var(--accent)]" size={18} />
+                <input 
+                  type="text" 
+                  name="name" 
+                  required
+                  placeholder="Enter identification..."
+                  className="w-full bg-[#020408] border border-[#1E293B] rounded-xl py-3 pl-12 pr-4 text-[#E2E8F0] focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)] transition-all placeholder:text-[#94A3B8]/30 font-mono text-sm"
+                />
+              </div>
+            </div>
+
+            <div className="group/input">
+              <label className="text-[10px] font-mono text-[#94A3B8] uppercase tracking-widest mb-2 block group-focus-within/input:text-[var(--accent)]">Comms Address</label>
+              <div className="relative">
+                <Mail className="absolute left-4 top-3.5 text-[#94A3B8] group-focus-within/input:text-[var(--accent)]" size={18} />
+                <input 
+                  type="email" 
+                  name="email" 
+                  required
+                  placeholder="name@sector.com"
+                  className="w-full bg-[#020408] border border-[#1E293B] rounded-xl py-3 pl-12 pr-4 text-[#E2E8F0] focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)] transition-all placeholder:text-[#94A3B8]/30 font-mono text-sm"
+                />
+              </div>
+            </div>
+
+            <div className="group/input">
+              <label className="text-[10px] font-mono text-[#94A3B8] uppercase tracking-widest mb-2 block group-focus-within/input:text-[var(--accent)]">Data Packet</label>
+              <div className="relative">
+                <MessageSquare className="absolute left-4 top-3.5 text-[#94A3B8] group-focus-within/input:text-[var(--accent)]" size={18} />
+                <textarea 
+                  name="message" 
+                  rows={4}
+                  required
+                  placeholder="Enter transmission data..."
+                  className="w-full bg-[#020408] border border-[#1E293B] rounded-xl py-3 pl-12 pr-4 text-[#E2E8F0] focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)] transition-all placeholder:text-[#94A3B8]/30 font-mono text-sm resize-none"
+                />
+              </div>
+            </div>
+          </div>
+
+          <button 
+            type="submit" 
+            disabled={formStatus === "submitting" || formStatus === "success"}
+            className={`w-full py-4 rounded-xl font-bold font-mono tracking-widest transition-all flex items-center justify-center gap-2 border
+              ${formStatus === "success" 
+                ? "bg-[var(--accent)]/20 border-[var(--accent)] text-[var(--accent)] cursor-default" 
+                : "bg-[var(--accent)] border-[var(--accent)] text-[#020408] hover:brightness-110 hover:scale-[1.02]"
+              }`}
+          >
+            {formStatus === "submitting" ? (
+              <span className="animate-pulse">SENDING_PACKET...</span>
+            ) : formStatus === "success" ? (
+              "TRANSMISSION_COMPLETE"
+            ) : (
+              <>
+                INITIATE_SEND <Send size={16} />
+              </>
+            )}
+          </button>
+        </form>
+      </div>
+    </div>
   );
 }

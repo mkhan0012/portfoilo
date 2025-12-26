@@ -6,74 +6,70 @@
 }
 
 :root {
-  --background: #030303;
-  --foreground: #ffffff;
+  /* GLOBAL DYNAMIC ACCENT COLOR */
+  --accent: #06B6D4; /* Default: Cyan */
+  
+  --background: #020408;
+  --foreground: #E2E8F0;
+  --card-bg: #0F172A;
+  --card-border: #1E293B;
 }
 
-/* 1. SMOOTH SCROLLING */
-html {
-  scroll-behavior: smooth;
-}
+html { scroll-behavior: smooth; }
 
-/* 2. BASE SETTINGS */
-html,
 body {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  overflow-x: hidden;
   background-color: var(--background);
   color: var(--foreground);
+  font-family: var(--font-sans), sans-serif;
+  overflow-x: hidden;
+  perspective: 2000px;
 }
 
-body {
-  font-family: var(--font-sans), system-ui, sans-serif;
-  -webkit-font-smoothing: antialiased;
+/* --- UTILITIES USING THE VARIABLE --- */
+/* We define utility classes that map to the variable */
+.text-accent { color: var(--accent); }
+.bg-accent { background-color: var(--accent); }
+.border-accent { border-color: var(--accent); }
+.shadow-accent { box-shadow: 0 0 10px var(--accent); }
+
+/* --- 1. BIOMETRIC SCANNER --- */
+.bio-scan-line {
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  box-shadow: 0 0 15px var(--accent);
+  animation: scan-vertical 8s ease-in-out infinite;
+  opacity: 0.5;
 }
 
-/* 3. PREMIUM SCROLLBAR */
-::-webkit-scrollbar {
-  width: 6px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: #333;
-  border-radius: 10px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #555;
+@keyframes scan-vertical {
+  0% { transform: translateY(-10vh); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(110vh); opacity: 0; }
 }
 
-/* 4. BACKGROUND ANIMATIONS (Required for CyberBackground) */
-@keyframes blob {
-  0% { transform: translate(0px, 0px) scale(1); }
-  33% { transform: translate(30px, -50px) scale(1.1); }
-  66% { transform: translate(-20px, 20px) scale(0.9); }
-  100% { transform: translate(0px, 0px) scale(1); }
+/* --- 2. 3D PRESERVE --- */
+.preserve-3d { transform-style: preserve-3d; }
+
+/* --- 3. GLASS PANEL --- */
+.glass-panel {
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
-.animate-blob {
-  animation: blob 10s infinite;
-}
+/* --- 4. SCROLLBAR --- */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #020408; }
+::-webkit-scrollbar-thumb { background: #1E293B; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
-.animation-delay-2000 {
-  animation-delay: 2s;
+/* --- 5. ANIMATIONS --- */
+.animate-linear-scan {
+  animation: linearScan 2s linear infinite;
 }
-
-.animation-delay-4000 {
-  animation-delay: 4s;
-}
-
-.bg-grid {
-  background-size: 50px 50px;
-  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-                    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-}
-
-/* 5. UTILITY CLASSES */
-.perspective-1000 {
-  perspective: 1000px;
+@keyframes linearScan {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(300%); }
 }
